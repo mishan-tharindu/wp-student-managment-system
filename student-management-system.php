@@ -14,25 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Activation and deactivation hooks
 register_activation_hook( __FILE__, 'sms_install' );
 
-register_deactivation_hook( __FILE__, 'sms_uninstall' );
+// Register uninstall hook
+register_uninstall_hook( __FILE__, 'sms_uninstall' );
+
 // Register deactivation hook
 register_deactivation_hook( __FILE__, 'sms_deactivate' );
 
 function sms_install() {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'students';
-    
-    $charset_collate = $wpdb->get_charset_collate();
-    
-    $sql = "CREATE TABLE $table_name (
-        id mediumint(9) NOT NULL AUTO_INCREMENT,
-        name tinytext NOT NULL,
-        email varchar(100) NOT NULL,
-        PRIMARY KEY  (id)
-    ) $charset_collate;";
-    
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    dbDelta( $sql );
+    sms_create_sms_tables();
 }
 
 function sms_uninstall() {
@@ -41,11 +30,34 @@ function sms_uninstall() {
 }
 
 
-
 function sms_deactivate() {
     // Call the function to drop the table
-    sms_drop_students_table();
+    // sms_drop_students_table();
 }
+
+// Function to create the SMS Database tabels
+function sms_create_sms_tables()
+{
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'students';
+    
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+            student_id VARCHAR(100) PRIMARY KEY,
+            first_name VARCHAR(50) NOT NULL,
+            last_name VARCHAR(50) NOT NULL,
+            date_of_birth DATE,
+            gender VARCHAR(50) NOT NULL,
+            contact_info VARCHAR(100),
+            address TEXT,
+            student_status INT
+        );";
+    
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql );
+}
+
 
 // Function to drop the students table
 function sms_drop_students_table() {
@@ -84,8 +96,6 @@ function sms_admin_page() {
         $student_id = intval( $_GET['edit'] );
         $student = $wpdb->get_row( "SELECT * FROM $table_name WHERE id = $student_id" );
     }
-
-
 
     ?>
     <h1>Student Management System</h1>
