@@ -7,13 +7,15 @@ jQuery(document).ready(function($) {
             method: 'GET',
             data: {
                 action: 'sms_search_student_by_id',
-                student_id_search: searchQuery
+                student_id_search: searchQuery,
+                _wpnonce: sms_ajax_obj.nonce // Include the nonce
             },
             success: function(response) {
                 $('#sms_student_by_id_table').html(response);
             }
         });
     });
+
 
     // Handle Enter key press to toggle Active status
     $('#sms_student_id_search').on('keypress', function(event) {
@@ -26,7 +28,8 @@ jQuery(document).ready(function($) {
                 method: 'POST',
                 data: {
                     action: 'sms_toggle_active_status',
-                    student_id: studentId
+                    student_id: studentId,
+                    _wpnonce: sms_ajax_obj.nonce // Include the nonce
                 },
                 success: function(response) {
                     $('#sms_student_by_id_table').html(response);
@@ -44,11 +47,15 @@ jQuery(document).ready(function($) {
             method: 'POST',
             data: {
                 action: 'sms_toggle_active_status',
-                student_id: studentId
+                student_id: studentId,
+                _wpnonce: sms_ajax_obj.nonce // Include the nonce
             },
             success: function(response) {
                 $('#sms_student_by_id_table').html(response);
             }
         });
     });
+
+
+
 });

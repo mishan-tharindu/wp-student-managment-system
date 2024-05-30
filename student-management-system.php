@@ -13,7 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Activation and deactivation hooks
 register_activation_hook( __FILE__, 'sms_install' );
+
 register_deactivation_hook( __FILE__, 'sms_uninstall' );
+// Register deactivation hook
+register_deactivation_hook( __FILE__, 'sms_deactivate' );
 
 function sms_install() {
     global $wpdb;
@@ -33,11 +36,26 @@ function sms_install() {
 }
 
 function sms_uninstall() {
+   // Call the function to drop the table
+   sms_drop_students_table();
+}
+
+
+
+function sms_deactivate() {
+    // Call the function to drop the table
+    sms_drop_students_table();
+}
+
+// Function to drop the students table
+function sms_drop_students_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'students';
+
     $sql = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query($sql);
 }
+
 
 // Add menu item
 add_action( 'admin_menu', 'sms_menu' );
@@ -211,8 +229,9 @@ function sms_enqueue_scripts() {
       // Enqueue the new JavaScript file
       wp_enqueue_script( 'sms-ajax-search-by-id', plugin_dir_url( __FILE__ ) . 'sms-ajax-search-by-id.js', array('jquery'), null, true );
       wp_localize_script( 'sms-ajax-search-by-id', 'sms_ajax_obj', array( 
-          'ajax_url' => admin_url( 'admin-ajax.php' ) 
-      ));
+        'ajax_url' => admin_url( 'admin-ajax.php' ),
+        'nonce'    => wp_create_nonce( 'sms_nonce' ) // Generate a nonce and pass it to JavaScript
+    ));
 
 
 }
@@ -296,6 +315,13 @@ add_action( 'wp_ajax_sms_search_student_by_id', 'sms_search_student_by_id' );
 add_action( 'wp_ajax_nopriv_sms_search_student_by_id', 'sms_search_student_by_id' );
 
 function sms_search_student_by_id() {
+
+    // Check nonce
+    if ( !isset( $_GET['_wpnonce'] ) || !wp_verify_nonce( $_GET['_wpnonce'], 'sms_nonce' ) ) {
+        wp_die( 'Nonce verification failed', 'Error', array( 'response' => 403 ) );
+    }
+
+
     global $wpdb;
     $table_name = $wpdb->prefix . 'students';
 
@@ -328,7 +354,10 @@ function sms_toggle_active_status() {
     $table_name = $wpdb->prefix . 'students';
 
     if ( isset( $_POST['student_id'] ) ) {
-        $student_id = intval( $_POST['student_id'] );
+
+        
+        // $student_id = intval( $_POST['student_id'] );
+        $student_id = intval( sanitize_text_field($_POST['student_id']));
         $student = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", $student_id ) );
 
         if ( $student ) {
@@ -352,4 +381,6 @@ function sms_toggle_active_status() {
 
     wp_die();
 }
+
+
 
