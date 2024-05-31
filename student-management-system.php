@@ -29,35 +29,34 @@ function sms_uninstall() {
    sms_drop_students_table();
 }
 
-
 function sms_deactivate() {
     // Call the function to drop the table
     // sms_drop_students_table();
 }
 
 // Function to create the SMS Database tabels
-function sms_create_sms_tables()
-{
+function sms_create_sms_tables(){
     global $wpdb;
     $table_name = $wpdb->prefix . 'students';
     
     $charset_collate = $wpdb->get_charset_collate();
 
     $sql = "CREATE TABLE $table_name (
-            student_id VARCHAR(100) PRIMARY KEY,
-            first_name VARCHAR(50) NOT NULL,
-            last_name VARCHAR(50) NOT NULL,
-            date_of_birth DATE,
-            gender VARCHAR(50) NOT NULL,
-            contact_info VARCHAR(100),
-            address TEXT,
-            student_status INT
-        );";
+        student_id VARCHAR(100) PRIMARY KEY,
+        first_name VARCHAR(50) NOT NULL,
+        last_name VARCHAR(50) NOT NULL,
+        date_of_birth DATE,
+        gender VARCHAR(50) NOT NULL,
+        contact_info VARCHAR(100),
+        address TEXT,
+        email VARCHAR(100),
+        student_status INT
+    );
+    ";
     
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
 }
-
 
 // Function to drop the students table
 function sms_drop_students_table() {
@@ -73,117 +72,300 @@ function sms_drop_students_table() {
 add_action( 'admin_menu', 'sms_menu' );
 
 function sms_menu() {
-    add_menu_page( 'Student Management', 'Student Management', 'manage_options', 'student-management', 'sms_admin_page', 'dashicons-welcome-learn-more', 6 );
+    add_menu_page( 'Student Management', 'Student Management', 'manage_options', 'sms-student-management', 'sms_admin_page', 'dashicons-welcome-learn-more', 6 );
+    
+    // Submenu items
+    add_submenu_page(
+        'sms-student-management', // Parent slug
+        'Teachers Management', // Page title
+        'Teachers Management', // Menu title
+        'manage_options', // Capability
+        'sms-teachers-registration', // Menu slug
+        'sms_teachers_registration_page' // Function to display the page
+    );
+
+    // Submenu items
+    add_submenu_page(
+        'sms-student-management', // Parent slug
+        'Subject Management', // Page title
+        'Subject Management', // Menu title
+        'manage_options', // Capability
+        'sms-subject-registration', // Menu slug
+        'sms_subject_registration_page' // Function to display the page
+    );
+
+    // Submenu items
+    add_submenu_page(
+        'sms-student-management', // Parent slug
+        'Class Management', // Page title
+        'Class Management', // Menu title
+        'manage_options', // Capability
+        'sms-class-registration', // Menu slug
+        'sms_class_registration_page' // Function to display the page
+    );
+
+    // Submenu items
+    add_submenu_page(
+        'sms-student-management', // Parent slug
+        'Exam Management', // Page title
+        'Exam Management', // Menu title
+        'manage_options', // Capability
+        'sms-class-registration', // Menu slug
+        'sms_class_registration_page' // Function to display the page
+    );
+
+}
+
+function sms_teachers_registration_page(){
+    ?>
+    <div class="wrap">
+        <h1>Teachers Management</h1>
+        <p>Here you can register teachers.</p>
+        <!-- Add your teachers registration code here -->
+    </div>
+    <?php
+}
+
+function sms_subject_registration_page(){
+    ?>
+    <div class="wrap">
+        <h1>Subject Management</h1>
+        <p>Here you can register teachers.</p>
+        <!-- Add your teachers registration code here -->
+    </div>
+    <?php
+}
+
+function sms_class_registration_page(){
+    ?>
+    <div class="wrap">
+        <h1>Class Management</h1>
+        <p>Here you can register teachers.</p>
+        <!-- Add your teachers registration code here -->
+    </div>
+    <?php
+}
+
+function sms_exam_registration_page(){
+    ?>
+    <div class="wrap">
+        <h1>Exam Management</h1>
+        <p>Here you can register teachers.</p>
+        <!-- Add your teachers registration code here -->
+    </div>
+    <?php
 }
 
 function sms_admin_page() {
-    if ( isset( $_POST['sms_submit'] ) ) {
-        if ( isset( $_GET['edit'] ) ) {
-            sms_update_student( $_GET['edit'] );
-        } else {
-            sms_register_student();
-        }
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'students';
+
+    // Handle form submission
+    if ( isset( $_POST['sms_submit'] ) && $_POST['sms_submit'] === "Update Student" ) {
+        sms_update_student();
+        echo '<script>console.log("update")</script>';
+        // echo '<script>window.location.href="?page=sms-student-management";</script>';
+    } else if ( isset( $_POST['sms_submit'] ) && $_POST['sms_submit'] === "Register Student" ) {
+        sms_register_student();
+        
+        echo '<script>window.location.href="?page=sms-student-management";</script>';
     }
 
+    // Handle delete
     if ( isset( $_GET['delete'] ) ) {
-        sms_delete_student( $_GET['delete'] );
+        // echo '<p>User Data Delete :::'.$_GET['delete'].'</p>';
+        sms_delete_student($_GET['delete']); // Provide student ID as argument
+        echo '<script>window.location.href="?page=sms-student-management";</script>';
     }
 
     $student = null;
     if ( isset( $_GET['edit'] ) ) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'students';
         $student_id = intval( $_GET['edit'] );
-        $student = $wpdb->get_row( "SELECT * FROM $table_name WHERE id = $student_id" );
+        $student = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE student_id = %d", $student_id ) );
     }
 
+    // Display the form
     ?>
     <h1>Student Management System</h1>
     <form method="post" action="">
         <table>
             <tr>
-                <th>Name:</th>
-                <td><input type="text" name="name" value="<?php echo $student ? esc_attr( $student->name ) : ''; ?>" required /></td>
+                <th>ID:</th>
+                <td><input type="text" name="student_id" value="<?php echo isset($_GET['edit']) ? esc_attr($_GET['edit']) : generate_unique_student_id(); ?>" readonly required/></td>
+            </tr>
+            <tr>
+                <th>First Name:</th>
+                <td><input type="text" name="first_name" value="<?php echo isset($_POST['first_name']) ? esc_attr($_POST['first_name']) : ''; ?>" required /></td>
+            </tr>
+            <tr>
+                <th>Last Name:</th>
+                <td><input type="text" name="last_name" value="<?php echo isset($_POST['last_name']) ? esc_attr($_POST['last_name']) : ''; ?>" required /></td>
             </tr>
             <tr>
                 <th>Email:</th>
-                <td><input type="email" name="email" value="<?php echo $student ? esc_attr( $student->email ) : ''; ?>" required /></td>
+                <td><input type="email" name="email" value="<?php echo isset($_POST['email']) ? esc_attr($_POST['email']) : ''; ?>" required /></td>
             </tr>
         </table>
-        <input type="submit" name="sms_submit" value="<?php echo $student ? 'Update Student' : 'Register Student'; ?>" />
+        <input type="submit" name="sms_submit" value="<?php echo isset($_GET['edit']) ? 'Update Student' : 'Register Student'; ?>" />
     </form>
     <?php
 
     sms_student_table();
 }
 
-
+// Student Registration Database Function
 function sms_register_student() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'students';
     
-    $name = sanitize_text_field( $_POST['name'] );
+    $studentid = sanitize_text_field( $_POST['student_id'] );
+    $first_name = sanitize_text_field( $_POST['first_name'] );
+    $last_name = sanitize_text_field( $_POST['last_name'] );
     $email = sanitize_email( $_POST['email'] );
+    
 
     $wpdb->insert( 
         $table_name, 
         array( 
-            'name' => $name, 
+            'student_id' => $studentid, 
+            'first_name' => $first_name, 
+            'last_name' => $last_name, 
             'email' => $email 
         ) 
     );
 }
 
-function sms_update_student( $student_id ) {
+// Student Update Database Function
+// function sms_update_student( $student_id ) {
+//     global $wpdb;
+//     $table_name = $wpdb->prefix . 'students';
+    
+//     $first_name = sanitize_text_field( $_POST['first_name'] );
+//     $last_name = sanitize_text_field( $_POST['last_name'] );
+//     $email = sanitize_email( $_POST['email'] );
+
+//     $wpdb->update( 
+//         $table_name, 
+//         array( 
+//             'first_name' => $first_name,
+//             'last_name' => $last_name,
+//             'email' => $email 
+//         ), 
+//         array( 'student_id' => $student_id ) 
+//     );
+// }
+
+function sms_update_student() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'students';
     
-    $name = sanitize_text_field( $_POST['name'] );
+    $student_id = sanitize_text_field( $_POST['student_id'] );
+    $first_name = sanitize_text_field( $_POST['first_name'] );
+    $last_name = sanitize_text_field( $_POST['last_name'] );
     $email = sanitize_email( $_POST['email'] );
 
     $wpdb->update( 
         $table_name, 
         array( 
-            'name' => $name,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
             'email' => $email 
         ), 
-        array( 'id' => $student_id ) 
+        array( 'student_id' => $student_id ) 
     );
-}
-
-
-function sms_delete_student( $id ) {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'students';
-
-    $wpdb->delete( $table_name, array( 'id' => $id ) );
 }
 
 
 function sms_student_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'students';
+    $students = $wpdb->get_results("SELECT * FROM $table_name");
     
-    $students = $wpdb->get_results( "SELECT * FROM $table_name" );
-    
-    echo '<h2>Student List</h2>';
-    echo '<table border="1" cellpadding="10">';
-    echo '<tr><th>ID</th><th>Name</th><th>Email</th><th>Actions</th></tr>';
-    
+    echo '<h2>Students List</h2>';
+    echo '<table id="students-table" border="1" cellpadding="10">';
+    echo '<tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Email</th><th>Actions</th></tr>';
     foreach ( $students as $student ) {
-        echo '<tr>';
-        echo '<td>' . esc_html( $student->id ) . '</td>';
-        echo '<td>' . esc_html( $student->name ) . '</td>';
+        echo '<tr data-student-id="' . esc_attr( $student->student_id ) . '" data-first-name="' . esc_attr( $student->first_name ) . '" data-last-name="' . esc_attr( $student->last_name ) . '" data-email="' . esc_attr( $student->email ) . '">';
+        echo '<td>' . esc_html( $student->student_id ) . '</td>';
+        echo '<td>' . esc_html( $student->first_name ) . '</td>';
+        echo '<td>' . esc_html( $student->last_name ) . '</td>';
         echo '<td>' . esc_html( $student->email ) . '</td>';
-        echo '<td>';
-        echo '<a href="?page=student-management&edit=' . esc_html( $student->id ) . '">Edit</a> | ';
-        echo '<a href="?page=student-management&delete=' . esc_html( $student->id ) . '">Delete</a>';
-        echo '</td>';
+        echo '<td><a href="?page=sms-student-management&edit=' . esc_attr ( $student->student_id ) . '" class="edit-student">Edit</a> | <a href="?page=sms-student-management&delete=' . esc_attr ( $student->student_id ) . '">Delete</a></td>';
         echo '</tr>';
     }
-    
     echo '</table>';
 }
+
+add_action('admin_footer', 'sms_add_admin_scripts');
+
+function sms_add_admin_scripts() {
+    ?>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('#students-table tr[data-student-id]');
+            const form = document.querySelector('form');
+            const studentIdField = form.querySelector('input[name="student_id"]');
+            const firstNameField = form.querySelector('input[name="first_name"]');
+            const lastNameField = form.querySelector('input[name="last_name"]');
+            const emailField = form.querySelector('input[name="email"]');
+            const submitButton = form.querySelector('input[name="sms_submit"]');
+
+            rows.forEach(row => {
+                row.querySelector('.edit-student').addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    const studentId = row.getAttribute('data-student-id');
+                    const firstName = row.getAttribute('data-first-name');
+                    const lastName = row.getAttribute('data-last-name');
+                    const email = row.getAttribute('data-email');
+
+                    studentIdField.value = studentId;
+                    firstNameField.value = firstName;
+                    lastNameField.value = lastName;
+                    emailField.value = email;
+
+                    form.action = "?page=sms-student-management&edit=" + studentId;
+                    submitButton.value = "Update Student";
+                });
+            });
+        });
+    </script>
+    <?php
+}
+
+// Student Delete Database Function
+function sms_delete_student( $student_id ) { // Accept student ID as argument
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'students';
+
+    $result = $wpdb->delete( $table_name, array( 'student_id' => $student_id ));
+    // echo "<p>Student data ".$student_id." </p>";
+
+    if ( $result === false ) {
+        echo "<p>Error occurred while deleting student data.</p>";
+    } else {
+        echo "<p>Student data deleted successfully.</p>";
+    }
+}
+
+
+
+//Students Details view short code
+add_shortcode( 'student_list', 'sms_student_list_shortcode' );
+// Enqueue JavaScript for Ajax search
+add_action( 'wp_enqueue_scripts', 'sms_enqueue_scripts' );
+// Handle Ajax search request
+add_action( 'wp_ajax_sms_search_students', 'sms_search_students' );
+add_action( 'wp_ajax_nopriv_sms_search_students', 'sms_search_students' );
+// Shortcode to display student search by ID and toggle Active status
+add_shortcode( 'student_search_by_id', 'sms_student_search_by_id_shortcode' );
+// Handle Ajax search request by ID
+add_action( 'wp_ajax_sms_search_student_by_id', 'sms_search_student_by_id' );
+add_action( 'wp_ajax_nopriv_sms_search_student_by_id', 'sms_search_student_by_id' );
+// Handle Ajax request to toggle Active status
+add_action( 'wp_ajax_sms_toggle_active_status', 'sms_toggle_active_status' );
+add_action( 'wp_ajax_nopriv_sms_toggle_active_status', 'sms_toggle_active_status' );
+
 
 //View Students Details
 function sms_student_list_shortcode() {
@@ -206,8 +388,8 @@ function sms_student_list_shortcode() {
             if ( $students ) {
                 foreach ( $students as $student ) {
                     echo '<tr>';
-                    echo '<td>' . esc_html( $student->id ) . '</td>';
-                    echo '<td>' . esc_html( $student->name ) . '</td>';
+                    echo '<td>' . esc_html( $student->student_id ) . '</td>';
+                    echo '<td>' . esc_html( $student->first_name ) . '</td>';
                     echo '<td>' . esc_html( $student->email ) . '</td>';
                     echo '</tr>';
                 }
@@ -220,14 +402,6 @@ function sms_student_list_shortcode() {
     <?php
     return ob_get_clean();
 }
-
-
-
-//Students Details view short code
-add_shortcode( 'student_list', 'sms_student_list_shortcode' );
-
-// Enqueue JavaScript for Ajax search
-add_action( 'wp_enqueue_scripts', 'sms_enqueue_scripts' );
 
 function sms_enqueue_scripts() {
     wp_enqueue_script( 'sms-ajax-search', plugin_dir_url( __FILE__ ) . 'sms-ajax-search.js', array('jquery'), null, true );
@@ -245,10 +419,6 @@ function sms_enqueue_scripts() {
 
 
 }
-
-// Handle Ajax search request
-add_action( 'wp_ajax_sms_search_students', 'sms_search_students' );
-add_action( 'wp_ajax_nopriv_sms_search_students', 'sms_search_students' );
 
 function sms_search_students() {
     global $wpdb;
@@ -276,11 +446,6 @@ function sms_search_students() {
 
     wp_die();
 }
-
-
-
-// Shortcode to display student search by ID and toggle Active status
-add_shortcode( 'student_search_by_id', 'sms_student_search_by_id_shortcode' );
 
 function sms_student_search_by_id_shortcode() {
     ob_start();
@@ -319,11 +484,6 @@ function sms_student_search_by_id_shortcode() {
     return ob_get_clean();
 }
 
-
-// Handle Ajax search request by ID
-add_action( 'wp_ajax_sms_search_student_by_id', 'sms_search_student_by_id' );
-add_action( 'wp_ajax_nopriv_sms_search_student_by_id', 'sms_search_student_by_id' );
-
 function sms_search_student_by_id() {
 
     // Check nonce
@@ -354,10 +514,6 @@ function sms_search_student_by_id() {
 
     wp_die();
 }
-
-// Handle Ajax request to toggle Active status
-add_action( 'wp_ajax_sms_toggle_active_status', 'sms_toggle_active_status' );
-add_action( 'wp_ajax_nopriv_sms_toggle_active_status', 'sms_toggle_active_status' );
 
 function sms_toggle_active_status() {
     global $wpdb;
@@ -391,6 +547,32 @@ function sms_toggle_active_status() {
 
     wp_die();
 }
+
+function generate_unique_student_id() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'students';
+    $unique = false;
+    
+    while (!$unique) {
+        // Generate student ID with "STU" prefix, current date, and a random number
+        $random_number = mt_rand(1000, 9999); // You can adjust the range for random number as needed
+        $date_part = date('Ymd');
+        $student_id = 'STU' . $date_part . $random_number;
+
+        // Check if this ID already exists in the database
+        $existing_id = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE id = %s", $student_id));
+
+        if ($existing_id == 0) {
+            $unique = true;
+        }
+    }
+
+    return $student_id;
+}
+
+
+
+
 
 
 
