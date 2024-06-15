@@ -242,12 +242,14 @@ function sms_create_sms_tables()
         FOREIGN KEY(subject_id) REFERENCES $table_subject(subject_id)
     ); CREATE TABLE $table_classes(
         class_id INT AUTO_INCREMENT PRIMARY KEY,
-        class_name VARCHAR(50) NOT NULL,
-        class_date DATE,
-        class_time TIME,
-        class_description TEXT,
-        subject_id INT,
-        FOREIGN KEY(subject_id) REFERENCES $table_subject(subject_id)
+        subject_id INT NOT NULL,
+        teacher_id VARCHAR(100) NOT NULL,
+        class_date date NOT NULL,
+        class_time time NOT NULL,
+        class_grade varchar(10) NOT NULL,
+        class_fee decimal(10,2) NOT NULL,
+        FOREIGN KEY(subject_id) REFERENCES $table_subject(subject_id),
+        FOREIGN KEY(teacher_id) REFERENCES $table_teachers(teacher_id)
     ); CREATE TABLE $table_exams(
         exam_id INT AUTO_INCREMENT PRIMARY KEY,
         exam_name VARCHAR(50) NOT NULL,

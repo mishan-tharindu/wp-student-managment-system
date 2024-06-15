@@ -3,9 +3,21 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 ?>
-<h1>Teachers Management</h1>
-<p>Content for Teachers Management page.</p>
+<?php
+    if(isset( $_POST['sms_submit'] ) && $_POST['sms_submit'] === "Register"){
+        sms_register_teacher();
+        // error_log("Calling Teacher Registration !!!");
+    }else if(isset( $_POST['sms_submit'] ) && $_POST['sms_submit'] === "Update Teacher"){
+        sms_update_teacher();
+    }
 
+    if ( isset( $_GET['delete'] ) ) {
+        sms_delete_teacher($_GET['delete']);
+        // echo '<script>window.location.href="?page=sms-teachers-registration"";</script>';
+    }
+
+
+?>
 <form method="post" action="">
         <table>
             <tr>
@@ -36,19 +48,9 @@ if ( ! defined( 'ABSPATH' ) ) {
                 </td>
             </tr>
             <tr>
-                <th>Subject:</th>
+                <th>Hire Date</th>
                 <td>
-                    <select id="subject_id" name="subject_id" required>
-                        <?php
-                        // Fetch subjects from the database and populate the dropdown
-                        global $wpdb;
-                        $tabel_name = $wpdb->prefix . "subject";
-                        $subjects = $wpdb->get_results("SELECT * FROM $tabel_name");
-                        foreach ($subjects as $subject) {
-                            echo "<option value='{$subject->subject_id}'>{$subject->subject_name}</option>";
-                        }
-                        ?>
-                    </select>
+                <input type="date" id="hire_date" name="hire_date" required><br>
                 </td>
             </tr>
             <tr>
@@ -67,8 +69,73 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <td colspan="2">
                 <?php wp_nonce_field('teacher_form_action', 'teacher_form_nonce'); ?>
                 <input type="hidden" name="action" value="sms_register_teacher">
-                    <input type="submit" name="sms_submit" value="<?php echo isset( $_GET['edit'] ) ? 'Update Student' : 'Register Student'; ?>" />
+                    <input type="submit" name="sms_submit" value="Register" />
                 </td>
             </tr>
         </table>
     </form>
+    <div id="registration-message"></div>
+<br>
+<h3> Teachers Table</h3>
+<?php echo sms_teacher_table(); 
+
+add_action('admin_footer', 'sms_add_admin_scripts');
+    
+    function sms_add_admin_scripts() {
+        ?>
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                const rows = document.querySelectorAll('#teachers-table tr[data-teacher-id]');
+                const form = document.querySelector('form');
+                const teacherIDField = form.querySelector('input[name="teacher_id"]');
+                const firstNameField = form.querySelector('input[name="first_name"]');
+                const lastNameField = form.querySelector('input[name="last_name"]');
+                // const genderField = form.querySelector('input[name="gender"]');
+                // const hireDateField = form.querySelector('input[name="hire_date"]');
+                const phone_numberField = form.querySelector('input[name="phone_number"]');
+                const addressField = form.querySelector('input[name="address"]');
+                const emailField = form.querySelector('input[name="email"]');
+                const submitButton = form.querySelector('input[name="sms_submit"]');
+               
+    
+                rows.forEach(row => {
+                    row.querySelector('.edit-teacher').addEventListener('click', function(event) {
+                        event.preventDefault();
+    
+                        const teacherId = row.getAttribute('data-teacher-id');
+                        const firstName = row.getAttribute('data-first-name');
+                        const lastName = row.getAttribute('data-last-name');
+                        
+                        const phonenumber = row.getAttribute('data-phonenumber');
+                        const address = row.getAttribute('data-address');
+                        const email = row.getAttribute('data-email');
+
+                        const gender = row.getAttribute('data-gender');
+                        const genderField = form.querySelector(`input[name="gender"][value="${gender}"]`);
+                        if (genderField) {
+                            genderField.checked = true;
+                        }
+                        
+                        teacherIDField.value = teacherId;
+                        firstNameField.value = firstName;
+                        lastNameField.value = lastName;
+                        phone_numberField.value = phonenumber;
+                        addressField.value = address;
+                        emailField.value = email;
+
+                         // Set the hire date
+                        const hireDate = row.getAttribute('data-hire-date');
+                        const hireDateField = form.querySelector('input[name="hire_date"]');
+                        if (hireDateField) {
+                            hireDateField.value = hireDate;
+                        }
+                       
+                        form.action = "?page=sms-teachers-registration&edit=" + teacherId;
+                        submitButton.value = "Update Teacher";
+                    });
+                });
+            });
+        </script>
+        <?php
+    }
+

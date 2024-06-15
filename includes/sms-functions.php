@@ -276,4 +276,184 @@ function sms_get_all_subjects($send_response = false) {
     }
 }
 
+function sms_register_teacher() {
+
+    // Debugging: check if nonce fields are present
+    if (!isset($_POST['teacher_form_nonce'])) {
+        wp_die('Nonce field is missing.');
+    }
+
+    // Check nonce
+    if (!isset($_POST['teacher_form_nonce']) || !wp_verify_nonce($_POST['teacher_form_nonce'], 'teacher_form_action')) {
+        wp_die('Invalid nonce.');
+        echo '<div class="error">Nonce verification failed.</div>';
+        return;
+    }
+
+    // Check permissions
+    if (!current_user_can('manage_options')) {
+        echo '<div class="error">You do not have permission to perform this action.</div>';
+        return;
+    }
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'teachers';
+
+    $teacehrid = sanitize_text_field($_POST['teacher_id']);
+    $firstname = sanitize_text_field($_POST['first_name']);
+    $lastname = sanitize_text_field($_POST['last_name']);
+    $gender = sanitize_text_field($_POST['gender']);
+    $hire_date = sanitize_text_field($_POST['hire_date']);
+    $phonenumber = sanitize_text_field($_POST['phone_number']);
+    $address = sanitize_text_field($_POST['address']);
+    $email = sanitize_text_field($_POST['email']);
+    
+    // Additional validation if needed
+    if (empty($teacehrid) || empty($firstname) || empty($lastname) || empty($email)) {
+        wp_die('Please fill in all required fields.');
+    }
+
+    // echo "Results = ".$teacehrid." -- ";
+
+    // Using $wpdb->insert which is secure against SQL injection
+    $result = $wpdb->insert( 
+        $table_name, 
+        array( 
+            'teacher_id' => $teacehrid,
+            'first_name' => $firstname,
+            'last_name' => $lastname,
+            'gender' => $gender,
+            'hire_date' => $hire_date,
+            'phonenumber' => $phonenumber,
+            'address' => $address,
+            'email' => $email
+        ),
+        array(
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s'
+        )
+    );
+
+    // Provide feedback to the user
+    if ($result) {
+        echo '<div class="success">Teacher registered successfully!</div>';
+        echo '<script>window.location.href="?page=sms-teachers-registration";</script>';
+    } else {
+        echo '<div class="error">Failed to register teacher. Please try again.</div>';
+    }
+    // Define the URL to students-management.php
+    // $redirect_url = plugin_dir_url(__FILE__) . '?page=sms-student-management';
+    // // Redirect to the students management page
+    // wp_redirect($redirect_url);
+    // echo '<script>window.location.href="?page=sms-student-management";</script>';
+    // exit;
+}
+
+function sms_teacher_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'teachers';
+    $teachers = $wpdb->get_results("SELECT * FROM $table_name");
+
+    if ($teachers) {
+        echo '<table ID="teachers-table" class="widefat fixed" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
+                    <th>Hire Date</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+        foreach ($teachers as $teacher) {
+            // $tabel_name = $wpdb->prefix . "subject";
+            // $subjects = $wpdb->get_results("SELECT * FROM WHERE subject_id = $teacher->subject_id");
+            // $subject_name;
+            // foreach ($subjects as $subject) {
+            //     $subject_name = $subject->subject_name;
+            // }
+            
+            
+            echo '<tr data-teacher-id="' . esc_attr( $teacher->teacher_id ) . '" data-first-name="' . esc_attr( $teacher->first_name ) . '" data-last-name="' . esc_attr( $teacher->last_name) . '" data-gender="' . esc_attr( $teacher->gender ) . '" data-hire-date="' . esc_attr( $teacher->hire_date ) . '"  data-phonenumber="' . esc_attr( $teacher->phonenumber ) . '" data-address="' . esc_attr( $teacher->address ) . '" data-email="' . esc_attr( $teacher->email ) . '">';
+            echo '<td>' . esc_html($teacher->teacher_id) . '</td>';
+            echo '<td>' . esc_html($teacher->first_name) . '</td>';
+            echo '<td>' . esc_html($teacher->last_name) . '</td>';
+            echo '<td>' . esc_html($teacher->gender) . '</td>';
+            echo '<td>' . esc_html($teacher->hire_date) . '</td>';
+            echo '<td>' . esc_html($teacher->phonenumber) . '</td>';
+            echo '<td>' . esc_html($teacher->address) . '</td>';
+            echo '<td>' . esc_html($teacher->email) . '</td>';
+            echo '<td><a class="edit-teacher" href="?page=sms-teacher-registration&edit=' . esc_attr($teacher->teacher_id) . '">Edit</a> | <a href="?page=sms-teachers-registration&delete=' . esc_attr($teacher->teacher_id) . '" onclick="return confirm(\'Are you sure you want to delete this teacher?\')">Delete</a></td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody></table>';
+    } else {
+        echo '<p>No teachers found.</p>';
+    }
+}
+
+function sms_update_teacher(){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'teachers';
+
+    $teacehrid = sanitize_text_field($_POST['teacher_id']);
+    $firstname = sanitize_text_field($_POST['first_name']);
+    $lastname = sanitize_text_field($_POST['last_name']);
+    $gender = sanitize_text_field($_POST['gender']);
+    $hire_date = sanitize_text_field($_POST['hire_date']);
+    $phonenumber = sanitize_text_field($_POST['phone_number']);
+    $address = sanitize_text_field($_POST['address']);
+    $email = sanitize_text_field($_POST['email']);
+
+    $result = $wpdb->update( 
+        $table_name, 
+        array( 
+            'first_name' => $firstname,
+            'last_name' => $lastname,
+            'gender' => $gender,
+            'hire_date' => $hire_date,
+            'phonenumber' => $phonenumber,
+            'address' => $address,
+            'email' => $email 
+        ), 
+        array( 'teacher_id' => $teacehrid ) 
+    );
+
+        // Provide feedback to the user
+        if ($result) {
+            echo '<div class="success">Teacher Updated successfully!</div>';
+            echo '<script>window.location.href="?page=sms-teachers-registration";</script>';
+        } else {
+            echo '<div class="error">Failed to updated teacher. Please try again.</div>';
+        }
+}
+
+function sms_delete_teacher($teacherID){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'teachers';
+
+    $result = $wpdb->delete( $table_name, array( 'teacher_id' => $teacherID ));
+
+    if ( $result === false ) {
+        echo '<div class="error">Error occurred while deleting student data.</div>';
+    } else {
+        echo '<div class="success">Student data deleted successfully.</div>';
+        echo '<script>window.location.href="?page=sms-teachers-registration";</script>';
+    }
+}
+
+
 ?>

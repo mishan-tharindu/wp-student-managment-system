@@ -74,6 +74,8 @@ function sms_class_registration_page() {
         <p>Content for Class Management page.</p>
     </div>
     <?php
+    // echo sms_class_registration_form();
+    include plugin_dir_path( __DIR__ ) . 'templates/admin/class-management.php';
 }
 
 function sms_exam_registration_page() {

@@ -17,6 +17,7 @@ register_uninstall_hook( __FILE__, 'sms_uninstall' );
 register_deactivation_hook( __FILE__, 'sms_deactivate' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/sms-functions.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/sms-class-functions.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/sms-database.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/sms-admin-pages.php';
 require_once plugin_dir_path( __FILE__ ) . 'templates/public/student-search-by-name.php';
