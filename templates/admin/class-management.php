@@ -6,12 +6,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
     global $wpdb;
 
-
     if(isset( $_POST['sms_submit'] ) && $_POST['sms_submit'] === "Register Class"){
         sms_register_class();
         // error_log("Calling Teacher Registration !!!");
-    }else if(isset( $_POST['sms_submit'] ) && $_POST['sms_submit'] === "Update Teacher"){
-        // sms_update_teacher();
+    }else if(isset( $_POST['sms_submit'] ) && $_POST['sms_submit'] === "Update Class"){
+        sms_update_class($_GET['edit']);
+    }
+
+    if ( isset( $_GET['delete'] ) ) {
+        sms_delete_class($_GET['delete']);
+        // echo '<script>window.location.href="?page=sms-teachers-registration"";</script>';
     }
 
     // Fetch subjects from the database
@@ -68,8 +72,11 @@ if ( ! defined( 'ABSPATH' ) ) {
             <input type="submit" id="submit_class" name="sms_submit" value="Register Class">
         </div>
     </form>
-    <div id="registration-message"></div>
+    <div id="registration-message"></div>          
+                
     <?php
-    return ob_get_clean();
 
+    echo sms_show_classes_table();
 
+    // return ob_get_clean();
+?>

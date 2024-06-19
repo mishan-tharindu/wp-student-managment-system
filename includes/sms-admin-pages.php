@@ -35,6 +35,24 @@ function sms_menu() {
 
     add_submenu_page(
         'sms-student-management',
+        'Student Enrolled',
+        'Student Enrolled',
+        'manage_options',
+        'sms-student-enrolled',
+        'sms_student_enrolled_page'
+    );
+
+    add_submenu_page(
+        'sms-student-management',
+        'Student Attendance',
+        'Student Attendance',
+        'manage_options',
+        'sms-student-attendance',
+        'sms_student_attendance_page'
+    );
+
+    add_submenu_page(
+        'sms-student-management',
         'Exam Management',
         'Exam Management',
         'manage_options',
@@ -78,6 +96,18 @@ function sms_class_registration_page() {
     include plugin_dir_path( __DIR__ ) . 'templates/admin/class-management.php';
 }
 
+function sms_student_enrolled_page() {
+    ?>
+    <div class="wrap">
+        <h1>Stundet Enrolled to Class</h1>
+        <p>Content for Stundet Enrolled to Class.</p>
+    </div>
+    <?php
+    // echo sms_class_registration_form();
+    include plugin_dir_path( __DIR__ ) . 'templates/admin/class-enrollment.php';
+    // include plugin_dir_path( __DIR__ ) . 'templates/admin/class-enrollment-management.php';
+}
+
 function sms_exam_registration_page() {
     ?>
     <div class="wrap">
@@ -87,6 +117,16 @@ function sms_exam_registration_page() {
     <?php
 }
 
+function sms_student_attendance_page() {
+    ?>
+    <div class="wrap">
+        <h1>Student Attendace Management</h1>
+        <p>Content for Attendace Management page.</p>
+    </div>
+    <?php
+    include plugin_dir_path( __DIR__ ) . 'templates/admin/student-attendance-management.php';
+
+}
 
 
 

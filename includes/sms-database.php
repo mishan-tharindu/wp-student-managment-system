@@ -224,7 +224,7 @@ function sms_create_sms_tables()
         address TEXT,
         email VARCHAR(100),
         student_id VARCHAR(100),
-        FOREIGN KEY(student_id) REFERENCES $table_students(student_id)
+        FOREIGN KEY (student_id) REFERENCES $table_students(student_id)
     ); CREATE TABLE $table_subject(
         subject_id INT AUTO_INCREMENT PRIMARY KEY,
         subject_name VARCHAR(50) NOT NULL,
@@ -239,7 +239,7 @@ function sms_create_sms_tables()
         phonenumber VARCHAR(100),
         address TEXT,
         email VARCHAR(100),
-        FOREIGN KEY(subject_id) REFERENCES $table_subject(subject_id)
+        FOREIGN KEY (subject_id) REFERENCES $table_subject(subject_id)
     ); CREATE TABLE $table_classes(
         class_id INT AUTO_INCREMENT PRIMARY KEY,
         subject_id INT NOT NULL,
@@ -248,8 +248,8 @@ function sms_create_sms_tables()
         class_time time NOT NULL,
         class_grade varchar(10) NOT NULL,
         class_fee decimal(10,2) NOT NULL,
-        FOREIGN KEY(subject_id) REFERENCES $table_subject(subject_id),
-        FOREIGN KEY(teacher_id) REFERENCES $table_teachers(teacher_id)
+        FOREIGN KEY (subject_id) REFERENCES $table_subject(subject_id),
+        FOREIGN KEY (teacher_id) REFERENCES $table_teachers(teacher_id)
     ); CREATE TABLE $table_exams(
         exam_id INT AUTO_INCREMENT PRIMARY KEY,
         exam_name VARCHAR(50) NOT NULL,
@@ -258,8 +258,8 @@ function sms_create_sms_tables()
         exam_status INT,
         subject_id INT,
         class_id INT,
-        FOREIGN KEY(subject_id) REFERENCES $table_subject(subject_id),
-        FOREIGN KEY(class_id) REFERENCES $table_classes(class_id)
+        FOREIGN KEY (subject_id) REFERENCES $table_subject(subject_id),
+        FOREIGN KEY (class_id) REFERENCES $table_classes(class_id)
     ); CREATE TABLE $table_student_payments(
         payment_id INT AUTO_INCREMENT PRIMARY KEY,
         student_id VARCHAR(100),
@@ -267,7 +267,7 @@ function sms_create_sms_tables()
         payment_date DATE,
         payment_time TIME,
         payment_method VARCHAR(50),
-        FOREIGN KEY(student_id) REFERENCES $table_students(student_id)
+        FOREIGN KEY (student_id) REFERENCES $table_students(student_id)
     ); CREATE TABLE $table_exam_enrolled_students(
         enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
         exam_id INT,
@@ -275,23 +275,23 @@ function sms_create_sms_tables()
         enrollment_date DATE,
         enrollment_time TIME,
         enrollment_status INT,
-        FOREIGN KEY(exam_id) REFERENCES $table_exams(exam_id),
-        FOREIGN KEY(student_id) REFERENCES $table_students(student_id)
+        FOREIGN KEY (exam_id) REFERENCES $table_exams(exam_id),
+        FOREIGN KEY (student_id) REFERENCES $table_students(student_id)
     ); CREATE TABLE $table_class_enrolled_students(
         enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
         class_id INT,
         student_id VARCHAR(100),
         enrollment_date DATE,
-        FOREIGN KEY(class_id) REFERENCES $table_classes(class_id),
-        FOREIGN KEY(student_id) REFERENCES $table_students(student_id)
+        FOREIGN KEY (class_id) REFERENCES $table_classes(class_id),
+        FOREIGN KEY (student_id) REFERENCES $table_students(student_id)
     ); CREATE TABLE $table_student_attendance(
         attendance_id INT AUTO_INCREMENT PRIMARY KEY,
         class_id INT,
         student_id VARCHAR(100),
         attendance_date DATE,
         attendance_status INT,
-        FOREIGN KEY(class_id) REFERENCES $table_classes(class_id),
-        FOREIGN KEY(student_id) REFERENCES $table_students(student_id)
+        FOREIGN KEY (class_id) REFERENCES $table_classes(class_id),
+        FOREIGN KEY (student_id) REFERENCES $table_students(student_id)
     ); CREATE TABLE $table_class_enrolled_teachers(
         enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
         class_id INT,
@@ -299,8 +299,8 @@ function sms_create_sms_tables()
         enrollment_date DATE,
         enrollment_time TIME,
         enrollment_status INT,
-        FOREIGN KEY(class_id) REFERENCES $table_classes(class_id),
-        FOREIGN KEY(teacher_id) REFERENCES $table_teachers(teacher_id)
+        FOREIGN KEY (class_id) REFERENCES $table_classes(class_id),
+        FOREIGN KEY (teacher_id) REFERENCES $table_teachers(teacher_id)
     ); CREATE TABLE $table_teacher_payments(
         payment_id INT AUTO_INCREMENT PRIMARY KEY,
         teacher_id VARCHAR(100),
@@ -309,15 +309,15 @@ function sms_create_sms_tables()
         payment_time TIME,
         payment_method VARCHAR(50),
         payment_status INT,
-        FOREIGN KEY(teacher_id) REFERENCES $table_teachers(teacher_id)
+        FOREIGN KEY (teacher_id) REFERENCES $table_teachers(teacher_id)
     ); CREATE TABLE $table_teacher_attendance(
         attendance_id INT AUTO_INCREMENT PRIMARY KEY,
         class_id INT,
         teacher_id VARCHAR(100),
         attendance_date DATE,
         attendance_status INT,
-        FOREIGN KEY(class_id) REFERENCES $table_classes(class_id),
-        FOREIGN KEY(teacher_id) REFERENCES $table_teachers(teacher_id)
+        FOREIGN KEY (class_id) REFERENCES $table_classes(class_id),
+        FOREIGN KEY (teacher_id) REFERENCES $table_teachers(teacher_id)
     );";
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

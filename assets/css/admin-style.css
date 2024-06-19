@@ -3,3 +3,16 @@
     width: 100%;
 }
 
+.selected-row {
+    background-color: #cce5ff;
+}
+
+.wwmt-containor-row
+{
+    display: flex;
+}
+/* Create two equal columns that sits next to each other */
+.wwmt-column {
+    flex: 50%;
+    padding: 10px;
+  }

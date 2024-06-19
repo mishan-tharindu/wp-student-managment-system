@@ -126,6 +126,32 @@ function generate_unique_teacher_id() {
     return $teacher_id;
 }
 
+function sms_enqueue_admin_scripts() {
+
+        // Enqueue Select2 CSS
+        wp_enqueue_style('select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
+    
+        // // Enqueue Select2 JS
+        wp_enqueue_script('select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), null, true);
+    
+
+    // Enqueue the custom admin script
+    wp_enqueue_script('sms-admin-script', plugin_dir_url( __DIR__ ) . 'assets/js/admin-scripts.js', array('jquery'), '1.0', true);
+    wp_localize_script('sms-admin-script', 'wpApiSettings', array(
+        'nonce' => wp_create_nonce('wp_rest')
+    ));
+
+    wp_localize_script('sms-admin-script', 'sms_ajax_classes_obj', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'ajax_nonce' => wp_create_nonce('sms_enroll_students_nonce')
+    ));
+
+    // You can also enqueue a CSS file if needed
+    // wp_enqueue_style('sms-admin-style', plugin_dir_url(__FILE__) . 'assets/css/admin-style.css');
+}
+
+
+
 function sms_enqueue_scripts() {
 
     $plugin_url = plugin_dir_url( __DIR__ );
@@ -148,6 +174,20 @@ function sms_enqueue_scripts() {
 
 
 }
+
+// function enqueue_select2() {
+//     // Enqueue Select2 CSS
+//     wp_enqueue_style('select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
+    
+//     // Enqueue Select2 JS
+//     wp_enqueue_script('select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), null, true);
+    
+//     // Localize script to pass the Ajax URL to admin-scripts.js
+//     wp_localize_script('admin-scripts', 'sms_ajax_classes_obj', array(
+//         'ajax_url' => admin_url('admin-ajax.php'),
+//         'ajax_nonce' => wp_create_nonce('sms_enroll_students_nonce')
+//     ));
+// }
 
 function sms_subject_enqueue_scripts(){
     $plugin_url = plugin_dir_url( __DIR__ );
@@ -453,6 +493,14 @@ function sms_delete_teacher($teacherID){
         echo '<div class="success">Student data deleted successfully.</div>';
         echo '<script>window.location.href="?page=sms-teachers-registration";</script>';
     }
+}
+
+function enqueue_attendance_scripts() {
+    wp_enqueue_script('attendance-management-script', plugin_dir_url( __DIR__ ) . 'assets/js/classes-data.js', array('jquery'), null, true);
+
+    wp_localize_script('attendance-management-script', 'sms_ajax_classes_data_obj', array(
+        'ajax_url' => admin_url('admin-ajax.php')
+    ));
 }
 
 
