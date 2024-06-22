@@ -68,6 +68,7 @@ jQuery(document).ready(function($) {
                     studentRows += '<tr>' +
                         '<td>' + student.id + '</td>' +
                         '<td>' + student.name + '</td>' +
+                        '<td class="class-date">' + getFormattedDate() + '</td>' +
                         '<td class="in-time">-</td>' +
                         '<td class="out-time">-</td>' +
                         '<td>No</td>' +
@@ -114,9 +115,11 @@ jQuery(document).ready(function($) {
             var studentId = $(this).find('td:first-child').text();
             var attendanceStatus = $(this).find('td:last-child').text() === 'Yes' ? 1 : 0;
             // var inTime = $(this).find('.in-time').text();
+            var classDate = $(this).find('.class-date').text();
             var inTime = $(this).find('.in-time').text();
+            var outTime = $(this).find('.out-time').text();
             console.log("Table Time ::"+inTime);
-            attendanceData.push({ student_id: studentId, in_Time: inTime, attendance_status: attendanceStatus });
+            attendanceData.push({ student_id: studentId, class_date: classDate, in_Time: inTime, out_Time: outTime, attendance_status: attendanceStatus });
         });
 
         $.ajax({

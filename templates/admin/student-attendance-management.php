@@ -33,15 +33,16 @@ if ( ! defined( 'ABSPATH' ) ) {
         </table>
 
         <!-- Mark Attendance Section -->
-        <h2>Mark Attendance</h2>
+        <h2>Mark Attendance - Check IN </h2>
         <input type="text" id="search-student-id" placeholder="Search student by ID" />
         <table id="class-students-table" class="widefat">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>In Time</th>
-                    <th>Out Time</th>
+                    <th>Date</th>
+                    <th>Check In Time</th>
+                    <th>Check Out Time</th>
                     <th>Paid</th>
                     <th>Attendance Status</th>
                 </tr>
