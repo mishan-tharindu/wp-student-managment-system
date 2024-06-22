@@ -52,6 +52,7 @@ jQuery(document).ready(function($) {
 
         $('#selected-class-id').val(classID);
 
+
         $.ajax({
             url: sms_ajax_classes_data_obj.ajax_url,
             method: 'GET',
@@ -67,6 +68,9 @@ jQuery(document).ready(function($) {
                     studentRows += '<tr>' +
                         '<td>' + student.id + '</td>' +
                         '<td>' + student.name + '</td>' +
+                        '<td class="in-time">-</td>' +
+                        '<td class="out-time">-</td>' +
+                        '<td>No</td>' +
                         '<td>No</td>' +
                         '</tr>';
                 });
@@ -80,6 +84,9 @@ jQuery(document).ready(function($) {
 
     // Handle student ID search and highlight
     $('#search-student-id').on('keypress', function(e) {
+
+        var time = getCurrentTime();
+
         if(e.which == 13) {
             e.preventDefault();
             var studentID = $(this).val().toLowerCase();
@@ -88,6 +95,7 @@ jQuery(document).ready(function($) {
                 if(id === studentID) {
                     $(this).addClass('highlight');
                     $(this).find('td:last-child').text('Yes');
+                    $(this).find('.in-time').text(time);
                 } else {
                     $(this).removeClass('highlight');
                 }
@@ -105,7 +113,10 @@ jQuery(document).ready(function($) {
         $('#class-students-table tbody tr').each(function() {
             var studentId = $(this).find('td:first-child').text();
             var attendanceStatus = $(this).find('td:last-child').text() === 'Yes' ? 1 : 0;
-            attendanceData.push({ student_id: studentId, attendance_status: attendanceStatus });
+            // var inTime = $(this).find('.in-time').text();
+            var inTime = $(this).find('.in-time').text();
+            console.log("Table Time ::"+inTime);
+            attendanceData.push({ student_id: studentId, in_Time: inTime, attendance_status: attendanceStatus });
         });
 
         $.ajax({

@@ -185,6 +185,24 @@ jQuery(document).ready(function($) {
 });
 
 
+function getCurrentTime() {
+    // Create a new Date object
+    const now = new Date();
 
+    // Get hours, minutes, and seconds
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
+
+    // Add leading zeros to hours, minutes, and seconds if needed
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    // Format the time as "HH:MM:SS"
+    const currentTime = `${hours}:${minutes}:${seconds}`;
+
+    return currentTime;
+}
 
 

@@ -40,6 +40,9 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>In Time</th>
+                    <th>Out Time</th>
+                    <th>Paid</th>
                     <th>Attendance Status</th>
                 </tr>
             </thead>

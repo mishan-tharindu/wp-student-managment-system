@@ -32,16 +32,23 @@ function save_attendance_data() {
     $attendance_data = $_POST['attendance_data'];
     $attendance_table = $wpdb->prefix . 'student_attendance';
 
+
+
     foreach ($attendance_data as $attendance) {
+
+        // Assuming you retrieve time from form
+        // $htmlTime = $_POST['time']; // Example: '10:57:09 PM'
+
         $result = $wpdb->insert(
             $attendance_table,
             array(
                 'class_id' => $class_id,
                 'student_id' => $attendance['student_id'],
                 'attendance_date' => current_time('mysql'),
+                'in_time' => $attendance['in_Time'],
                 'attendance_status' => $attendance['attendance_status']
             ),
-            array('%d', '%s', '%s', '%d')
+            array('%d', '%s', '%s', '%s')
         );
 
         if ($result === false) {
