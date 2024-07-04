@@ -108,15 +108,6 @@ function sms_student_enrolled_page() {
     // include plugin_dir_path( __DIR__ ) . 'templates/admin/class-enrollment-management.php';
 }
 
-function sms_exam_registration_page() {
-    ?>
-    <div class="wrap">
-        <h1>Exam Management</h1>
-        <p>Content for Exam Management page.</p>
-    </div>
-    <?php
-}
-
 function sms_student_attendance_page() {
     ?>
     <div class="wrap">
@@ -126,6 +117,16 @@ function sms_student_attendance_page() {
     <?php
     include plugin_dir_path( __DIR__ ) . 'templates/admin/student-attendance-management.php';
 
+}
+
+function sms_exam_registration_page() {
+    ?>
+    <div class="wrap">
+        <h1>Exam Management</h1>
+        <p>Content for Exam Management page.</p>
+    </div>
+    <?php
+    include plugin_dir_path( __DIR__ ) . 'templates/admin/exam-management.php';
 }
 
 

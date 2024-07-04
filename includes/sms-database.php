@@ -288,6 +288,8 @@ function sms_create_sms_tables()
         attendance_id INT AUTO_INCREMENT PRIMARY KEY,
         class_id INT,
         student_id VARCHAR(100),
+        in_time VARCHAR(200),
+        out_time VARCHAR(200),
         attendance_date DATE,
         attendance_status INT,
         FOREIGN KEY (class_id) REFERENCES $table_classes(class_id),
