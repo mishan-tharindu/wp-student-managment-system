@@ -12,6 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="wrap">
     <h1>Mark Student Attendance</h1>
     <form id="attendance-form" method="POST">
+
+         <!-- Toggle Button -->
+        <label for="toggle-attendance-view">Show Only Present Students</label>
+        <input type="checkbox" id="toggle-attendance-view" />
+
         <!-- Search Classes Section -->
         <h2>Search Classes</h2>
         <input type="text" id="search-classes" placeholder="Search classes by name" />
@@ -52,6 +57,6 @@ if ( ! defined( 'ABSPATH' ) ) {
             </tbody>
         </table>
         <input type="hidden" id="selected-class-id" name="class_id" value="" />
-        <input type="submit" value="Save Attendance" name="attendance_submit" class="button button-primary" />
+        <input type="submit" id="sms-attendance-submit" value="Save Attendance" name="attendance_submit" class="button button-primary" />
     </form>
 </div>
