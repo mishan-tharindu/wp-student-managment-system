@@ -117,3 +117,29 @@
 //     });
 // });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('#subject-table tr[data-subject-id]');
+    const form = document.querySelector('form');
+    const subject_id = form.querySelector('input[name="subject_id"]');
+    const subject_name = form.querySelector('input[name="subject_name"]');
+    const subject_description = form.querySelector('textarea[name="subject_description"]');
+    const submitButton = form.querySelector('input[name="sms_submit"]');
+
+    rows.forEach(row => {
+        row.querySelector('.edit-subject').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            const subjectid = row.getAttribute('data-subject-id');
+            const subjectname = row.getAttribute('data-subject-name');
+            const subjectdiscription = row.getAttribute('data-subject-discription');
+
+            subject_id.value = subjectid;
+            subject_name.value = subjectname;
+            subject_description.value = subjectdiscription;
+
+            form.action = "?page=sms-subject-registration&edit=" + subjectid;
+            submitButton.value = "Update Subject";
+        });
+    });
+});
+

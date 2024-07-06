@@ -21,6 +21,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/sms-class-functions.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/sms-database.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/sms-admin-pages.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/sms-attendance.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/sms-exam.php';
 require_once plugin_dir_path( __FILE__ ) . 'templates/public/student-search-by-name.php';
 require_once plugin_dir_path( __FILE__ ) . 'templates/public/students-registration.php';
 require_once plugin_dir_path( __FILE__ ) . 'templates/public/students-update-delete.php';
@@ -35,6 +36,7 @@ add_action( 'wp_enqueue_scripts', 'sms_subject_enqueue_scripts' );
 add_action( 'admin_enqueue_scripts', 'sms_enqueue_admin_styles' );
 add_action('admin_enqueue_scripts', 'sms_enqueue_admin_scripts');
 add_action('admin_enqueue_scripts', 'enqueue_attendance_scripts');
+add_action('admin_enqueue_scripts', 'sms_exam_enqueue_scripts');
 // add_action('admin_enqueue_scripts', 'enqueue_select2');
 
 

@@ -4,6 +4,73 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Scripts and Css Files Assignd
+
+function sms_enqueue_admin_scripts() {
+
+    // Enqueue Select2 CSS
+    wp_enqueue_style('select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
+
+    // // Enqueue Select2 JS
+    wp_enqueue_script('select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), null, true);
+
+
+    // Enqueue the custom admin script
+    wp_enqueue_script('sms-admin-script', plugin_dir_url( __DIR__ ) . 'assets/js/admin-scripts.js', array('jquery'), '1.0', true);
+    wp_localize_script('sms-admin-script', 'wpApiSettings', array(
+        'nonce' => wp_create_nonce('wp_rest')
+    ));
+
+    wp_localize_script('sms-admin-script', 'sms_ajax_classes_obj', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'ajax_nonce' => wp_create_nonce('sms_enroll_students_nonce')
+    ));
+
+    // You can also enqueue a CSS file if needed
+    // wp_enqueue_style('sms-admin-style', plugin_dir_url(__FILE__) . 'assets/css/admin-style.css');
+
+    // Subject js File
+    wp_enqueue_script('sms-subject-management', plugin_dir_url( __DIR__ ) . 'assets/js/sms-subject-management.js', array('jquery'), '1.0', true);
+    wp_localize_script('sms-subject-management', 'sms_ajax_subject_obj', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'ajax_nonce' => wp_create_nonce('sms_subject_nonce')
+    ));
+
+}
+
+function sms_enqueue_scripts() {
+
+    $plugin_url = plugin_dir_url( __DIR__ );
+
+    // echo plugin_dir_url( __DIR__ );
+
+    // Enqueue front-end CSS
+    wp_enqueue_style( 'sms-styles', plugin_dir_url( __DIR__ ) . 'assets/css/sms-styles.css', array(), '1.0', 'all' );
+
+    wp_enqueue_script( 'sms-ajax-search', $plugin_url . 'assets/js/sms-ajax-search.js', array('jquery'), null, true );
+    wp_localize_script( 'sms-ajax-search', 'sms_ajax_obj', array( 
+        'ajax_url' => admin_url( 'admin-ajax.php' ) 
+    ));
+
+    wp_enqueue_script('sms-ajax-registration', plugin_dir_url(__DIR__) . 'assets/js/sms-ajax-registration.js', array('jquery'), '1.0', true);
+
+    // Localize the AJAX URL for the JavaScript file
+    wp_localize_script('sms-ajax-registration', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
+
+
+
+}
+
+function enqueue_attendance_scripts() {
+    wp_enqueue_script('attendance-management-script', plugin_dir_url( __DIR__ ) . 'assets/js/classes-data.js', array('jquery'), null, true);
+
+    wp_localize_script('attendance-management-script', 'sms_ajax_classes_data_obj', array(
+        'ajax_url' => admin_url('admin-ajax.php')
+    ));
+}
+
+// CRUD Functions
+
 function sms_register_student() {
 
     // Debugging: check if nonce fields are present
@@ -126,68 +193,16 @@ function generate_unique_teacher_id() {
     return $teacher_id;
 }
 
-function sms_enqueue_admin_scripts() {
-
-        // Enqueue Select2 CSS
-        wp_enqueue_style('select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
-    
-        // // Enqueue Select2 JS
-        wp_enqueue_script('select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), null, true);
-    
-
-    // Enqueue the custom admin script
-    wp_enqueue_script('sms-admin-script', plugin_dir_url( __DIR__ ) . 'assets/js/admin-scripts.js', array('jquery'), '1.0', true);
-    wp_localize_script('sms-admin-script', 'wpApiSettings', array(
-        'nonce' => wp_create_nonce('wp_rest')
-    ));
-
-    wp_localize_script('sms-admin-script', 'sms_ajax_classes_obj', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'ajax_nonce' => wp_create_nonce('sms_enroll_students_nonce')
-    ));
-
-    // You can also enqueue a CSS file if needed
-    // wp_enqueue_style('sms-admin-style', plugin_dir_url(__FILE__) . 'assets/css/admin-style.css');
-}
-
-
-
-function sms_enqueue_scripts() {
-
+function sms_exam_enqueue_scripts(){
     $plugin_url = plugin_dir_url( __DIR__ );
-
-    // echo plugin_dir_url( __DIR__ );
-
-    // Enqueue front-end CSS
-    wp_enqueue_style( 'sms-styles', plugin_dir_url( __DIR__ ) . 'assets/css/sms-styles.css', array(), '1.0', 'all' );
-
-    wp_enqueue_script( 'sms-ajax-search', $plugin_url . 'assets/js/sms-ajax-search.js', array('jquery'), null, true );
-    wp_localize_script( 'sms-ajax-search', 'sms_ajax_obj', array( 
-        'ajax_url' => admin_url( 'admin-ajax.php' ) 
+        // Subject Registration
+    wp_enqueue_script('sms-exam-script', $plugin_url . 'assets/js/exam-script.js', array('jquery'), '1.0', true);
+    // wp_localize_script('sms-exam-script', 'sms_exam_ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
+    wp_localize_script('sms-exam-script', 'sms_exam_ajax_object', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('sms_exam_nonce')
     ));
-
-    wp_enqueue_script('sms-ajax-registration', plugin_dir_url(__DIR__) . 'assets/js/sms-ajax-registration.js', array('jquery'), '1.0', true);
-
-    // Localize the AJAX URL for the JavaScript file
-    wp_localize_script('sms-ajax-registration', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
-
-
-
 }
-
-// function enqueue_select2() {
-//     // Enqueue Select2 CSS
-//     wp_enqueue_style('select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
-    
-//     // Enqueue Select2 JS
-//     wp_enqueue_script('select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), null, true);
-    
-//     // Localize script to pass the Ajax URL to admin-scripts.js
-//     wp_localize_script('admin-scripts', 'sms_ajax_classes_obj', array(
-//         'ajax_url' => admin_url('admin-ajax.php'),
-//         'ajax_nonce' => wp_create_nonce('sms_enroll_students_nonce')
-//     ));
-// }
 
 function sms_subject_enqueue_scripts(){
     $plugin_url = plugin_dir_url( __DIR__ );
@@ -195,6 +210,7 @@ function sms_subject_enqueue_scripts(){
     // wp_enqueue_script('sms-subject-management', plugins_url('assets/js/sms-subject-management.js', __FILE__), array('jquery'), null, true);
     wp_enqueue_script('sms-ajax-registration', $plugin_url . 'assets/js/sms-subject-management.js', array('jquery'), '1.0', true);
     wp_localize_script('sms-subject-management', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
+    
 }
 
 function sms_enqueue_admin_styles() {
@@ -205,7 +221,6 @@ function sms_enqueue_admin_styles() {
 }
 
 // Register subject
-// add_action('wp_ajax_sms_register_subject', 'sms_register_subject');
 function sms_register_subject() {
 
         // Debugging: check if nonce fields are present
@@ -246,7 +261,6 @@ function sms_register_subject() {
 }
 
 // Update subject
-// add_action('wp_ajax_sms_update_subject', 'sms_update_subject');
 function sms_update_subject() {
     global $wpdb;
 
@@ -268,7 +282,6 @@ function sms_update_subject() {
 }
 
 // Delete subject
-// add_action('wp_ajax_sms_delete_subject', 'sms_delete_subject');
 function sms_delete_subject($subject_id) {
     global $wpdb;
 
@@ -285,7 +298,6 @@ function sms_delete_subject($subject_id) {
 }
 
 // Get a single subject
-// add_action('wp_ajax_sms_get_subject', 'sms_get_subject');
 function sms_get_subject() {
     global $wpdb;
 
@@ -302,7 +314,6 @@ function sms_get_subject() {
 }
 
 // Get all subjects
-// add_action('wp_ajax_sms_get_all_subjects', 'sms_get_all_subjects');
 function sms_get_all_subjects($send_response = false) {
     global $wpdb;
 
@@ -314,6 +325,23 @@ function sms_get_all_subjects($send_response = false) {
     } else {
         return $subjects;
     }
+}
+
+//Load Subject 
+function sms_subject_table(){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'subject';
+    $subjects = $wpdb->get_results("SELECT * FROM $table_name");
+
+    foreach ( $subjects as $subject ) {
+        echo '<tr data-subject-id="' . esc_attr( $subject->subject_id ) . '" data-subject-name="' . esc_attr( $subject->subject_name ) . '" data-subject-discription="' . esc_attr( $subject->subject_description ) .'">';
+        echo '<td>' . esc_html( $subject->subject_id ) . '</td>';
+        echo '<td>' . esc_html( $subject->subject_name ) . '</td>';
+        echo '<td>' . esc_html( $subject->subject_description ) . '</td>';
+        echo '<td><a href="?page=sms-subject-registration&edit=' . esc_attr ( $subject->subject_id ) . '" class="edit-subject">Edit</a> | <a class="delete-subject" href="?page=sms-subject-registration&delete=' . esc_attr ( $subject->subject_id ) . '">Delete</a></td>';
+        echo '</tr>';
+    }
+   
 }
 
 function sms_register_teacher() {
@@ -494,14 +522,5 @@ function sms_delete_teacher($teacherID){
         echo '<script>window.location.href="?page=sms-teachers-registration";</script>';
     }
 }
-
-function enqueue_attendance_scripts() {
-    wp_enqueue_script('attendance-management-script', plugin_dir_url( __DIR__ ) . 'assets/js/classes-data.js', array('jquery'), null, true);
-
-    wp_localize_script('attendance-management-script', 'sms_ajax_classes_data_obj', array(
-        'ajax_url' => admin_url('admin-ajax.php')
-    ));
-}
-
 
 ?>

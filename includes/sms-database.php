@@ -256,9 +256,7 @@ function sms_create_sms_tables()
         exam_date DATE,
         exam_time TIME,
         exam_status INT,
-        subject_id INT,
         class_id INT,
-        FOREIGN KEY (subject_id) REFERENCES $table_subject(subject_id),
         FOREIGN KEY (class_id) REFERENCES $table_classes(class_id)
     ); CREATE TABLE $table_student_payments(
         payment_id INT AUTO_INCREMENT PRIMARY KEY,
