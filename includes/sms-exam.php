@@ -1,6 +1,5 @@
 <?php
 
-
 // Handle AJAX request to save exam data
 function smp_save_exam() {
     global $wpdb;
@@ -85,8 +84,32 @@ add_action('wp_ajax_nopriv_smp_get_teacher_name', 'smp_get_teacher_name');
 
 // Handle AJAX request to load exams
 function smp_load_exams() {
-    global $wpdb;
-    $exams = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}exams WHERE exam_status = 1");
+        global $wpdb;
+        // $exams = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}exams WHERE exam_status = 1");
+        $exams = $wpdb->get_results("SELECT 
+        e.exam_id,
+        e.exam_name,
+        e.exam_date,
+        e.exam_time,
+        e.exam_status,
+        e.subject_id,
+        e.class_id,
+        sb.subject_name,
+        c.subject_id,
+        c.class_date,
+        c.class_time,
+        c.class_grade,
+        c.class_fee,
+        CONCAT(t.first_name, ' ', t.last_name) AS teacher_name
+    FROM 
+        wp_exams e
+    INNER JOIN 
+        wp_classes c ON e.class_id = c.class_id 
+    INNER JOIN 
+        wp_teachers t ON c.teacher_id = t.teacher_id 
+    INNER JOIN 
+        wp_subject sb ON c.subject_id = sb.subject_id
+    WHERE e.exam_status = '1'");
 
     if($exams === false){
         error_log('Failed to load classes from database');
@@ -115,43 +138,67 @@ add_action('wp_ajax_smp_delete_exam', 'smp_delete_exam');
 
 // Handle AJAX request to load exam details
 function smp_load_exam_details() {
-    check_ajax_referer('smp_nonce', '_ajax_nonce');
+    global $wpdb;
 
     if (!isset($_POST['exam_id'])) {
         wp_send_json_error('Exam ID is required.');
     }
 
-    global $wpdb;
     $exam_id = intval($_POST['exam_id']);
-    $exam = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}exams WHERE exam_id = %d", $exam_id), ARRAY_A);
+    // $exam = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}exams WHERE exam_id = %d", $exam_id), ARRAY_A);
+    $exam = $wpdb->get_row($wpdb->prepare("SELECT 
+                e.exam_id,
+                e.exam_name,
+                e.exam_date,
+                e.exam_time,
+                e.exam_status,
+                e.subject_id,
+                e.class_id,
+                sb.subject_name,
+                c.subject_id,
+                c.class_date,
+                c.class_time,
+                c.class_grade,
+                c.class_fee,
+                CONCAT(t.first_name, ' ', t.last_name) AS teacher_name
+            FROM 
+                wp_exams e
+            INNER JOIN 
+                wp_classes c ON e.class_id = c.class_id 
+            INNER JOIN 
+                wp_teachers t ON c.teacher_id = t.teacher_id 
+            INNER JOIN 
+                wp_subject sb ON c.subject_id = sb.subject_id
+            WHERE exam_id = %d", $exam_id), ARRAY_A);
 
     if (empty($exam)) {
         wp_send_json_error('Exam not found.');
     }
 
     // Get the class teacher name
-    $class_id = $exam['class_id'];
-    $teacher_name = $wpdb->get_var($wpdb->prepare("SELECT teacher_id FROM {$wpdb->prefix}classes WHERE id = %d", $class_id));
-    $exam['teacher_id'] = $teacher_name;
+    // $class_id = $exam['class_id'];
+    // $teacher_name = $wpdb->get_var($wpdb->prepare("SELECT sb.subject_id, c.class_id, CONCAT(t.first_name, ' ', t.last_name) AS teacher_name FROM {$wpdb->prefix}classes c INNER JOIN {$wpdb->prefix}teachers t ON c.teacher_id = t.teacher_id INNER JOIN {$wpdb->prefix}subject sb ON c.subject_id = sb.subject_id WHERE c.class_id = %d", $class_id));
+    // $exam['teacher_name'] = $teacher_name;
 
     wp_send_json_success($exam);
 }
 add_action('wp_ajax_smp_load_exam_details', 'smp_load_exam_details');
 
 // Handle AJAX request to update exam details
-function smp_update_exam() {
-    check_ajax_referer('smp_nonce', '_ajax_nonce');
+function sms_update_exam() {
+    // check_ajax_referer('smp_nonce', '_ajax_nonce');
 
-    if (!isset($_POST['exam_id'], $_POST['class_id'], $_POST['exam_date'], $_POST['exam_time'], $_POST['exam_status'])) {
-        wp_send_json_error('All fields are required.');
-    }
+    // if (!isset($_POST['exam_id'], $_POST['class_id'], $_POST['exam_date'], $_POST['exam_time'], $_POST['exam_status'])) {
+    //     wp_send_json_error('All fields are required.');
+    // }
 
     global $wpdb;
     $exam_id = intval($_POST['exam_id']);
     $class_id = intval($_POST['class_id']);
     $exam_date = sanitize_text_field($_POST['exam_date']);
     $exam_time = sanitize_text_field($_POST['exam_time']);
-    $exam_status = isset($_POST['exam_status']) ? 1 : 0;
+    $exam_status = intval($_POST['exam_status']);
+    // $exam_status = isset($_POST['exam_status']) ? 1 : 0;
 
     $updated = $wpdb->update(
         "{$wpdb->prefix}exams",
@@ -172,4 +219,5 @@ function smp_update_exam() {
 
     wp_send_json_success('Exam updated successfully.');
 }
-add_action('wp_ajax_smp_update_exam', 'smp_update_exam');
+add_action('wp_ajax_sms_update_exam', 'sms_update_exam');
+

@@ -174,10 +174,6 @@ function sms_delete_class($classID){
     }
 }
 
-// add_action('wp_ajax_search_classes', 'search_classes');
-// add_action('wp_ajax_search_students', 'search_students');
-// add_action('wp_ajax_enroll_students', 'enroll_students');
-
 // Handle Ajax search request
 add_action( 'wp_ajax_sms_search_classes', 'sms_search_classes' );
 // add_action( 'wp_ajax_nopriv_sms_search_classes', 'sms_search_classes' );
@@ -230,8 +226,6 @@ function sms_search_classes(){
 
 
 }
-
-
 
 add_action('wp_ajax_load_all_classes', 'load_all_classes');
 add_action('wp_ajax_nopriv_load_all_classes', 'load_all_classes');
@@ -426,10 +420,6 @@ function enroll_students_to_class() {
     //     wp_send_json_success($response);
 
 }
-// add_action('wp_ajax_enroll_students_to_class', 'enroll_students_to_class');
-
-// add_action('wp_ajax_save_enrollment_data', 'save_enrollment_data_callback');
-// add_action('wp_ajax_nopriv_save_enrollment_data', 'save_enrollment_data_callback');
 
 add_action('wp_ajax_save_enrollment_data_callback', 'save_enrollment_data_callback');
 add_action('wp_ajax_nopriv_save_enrollment_data_callback', 'save_enrollment_data_callback');
@@ -506,51 +496,4 @@ function validate_student_id($student_id) {
 
     return $count > 0;
 }
-
-
-// function enroll_students_to_class() {
-//     if (isset($_POST['class_id']) && !empty($_POST['class_id']) && isset($_POST['student_ids'])) {
-//         global $wpdb;
-//         $class_id = sanitize_text_field($_POST['class_id']);
-//         $student_ids = json_decode(stripslashes($_POST['student_ids']));
-//         $errors = [];
-//         $success = [];
-
-//         foreach ($student_ids as $student_id) {
-//             $result = $wpdb->insert(
-//                 $wpdb->prefix . 'class_enrolled_students',
-//                 [
-//                     'class_id' => $class_id,
-//                     'student_id' => $student_id,
-//                     'enrollment_date' => current_time('mysql')
-//                 ],
-//                 [
-//                     '%d',
-//                     '%s',
-//                     '%s'
-//                 ]
-//             );
-
-//             if ($result === false) {
-//                 $errors[] = $wpdb->last_error;
-//                 error_log("Failed to insert student ID {$student_id}: " . $wpdb->last_error);
-//             } else {
-//                 $success[] = $student_id;
-//             }
-//         }
-
-//         if (empty($errors)) {
-//             echo 'Enrollment data saved successfully.';
-//         } else {
-//             echo 'Failed to enroll some students: ' . implode('; ', $errors);
-//         }
-
-//         if (!empty($success)) {
-//             echo ' Successfully enrolled students: ' . implode(', ', $success);
-//         }
-//     } else {
-//         echo 'Invalid data provided.';
-//     }
-// }
-
 

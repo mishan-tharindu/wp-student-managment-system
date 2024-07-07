@@ -59,6 +59,15 @@ function sms_menu() {
         'sms-exam-registration',
         'sms_exam_registration_page'
     );
+
+    add_submenu_page(
+        'sms-student-management',
+        'Exam Enrollment Management',
+        'Exam Enrollment Management',
+        'manage_options',
+        'sms-exam-enrollment',
+        'sms_exam_enrollment_page'
+    );
 }
 
 function sms_students_management_page() {
@@ -127,6 +136,16 @@ function sms_exam_registration_page() {
     </div>
     <?php
     include plugin_dir_path( __DIR__ ) . 'templates/admin/exam-management.php';
+}
+
+function sms_exam_enrollment_page() {
+    ?>
+    <div class="wrap">
+        <h1>Exam Enrollement Management</h1>
+        <p>Content for Exam Enrollement Management page.</p>
+    </div>
+    <?php
+    include plugin_dir_path( __DIR__ ) . 'templates/admin/exam-enrollment-management.php';
 }
 
 

@@ -1,47 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const rows = document.querySelectorAll('#registered-classes-table tr[data-class-id]');
-    const form = document.querySelector('form');
-    // const classIDField = form.querySelector('input[name="teacher_id"]');
-    const subjectnameField = form.querySelector('select[name="subject_id"]');
-    const gradeField = form.querySelector('input[name="grade"]');
-    const timeField = form.querySelector('input[name="time"]');
-    const dateField = form.querySelector('input[name="date"]');
-    const classfeeField = form.querySelector('input[name="fee"]');
-    const teachernameField = form.querySelector('select[name="teacher_id"]');
-   
 
-    rows.forEach(row => {
-        row.querySelector('.edit-class').addEventListener('click', function(event) {
-            event.preventDefault();
-
-            const classID = row.getAttribute('data-class-id');
-            const subjectName = row.getAttribute('data-subject-name');
-            const classGrade = row.getAttribute('data-class-grade');
-            const classTime = row.getAttribute('data-class-time');
-            const classDate = row.getAttribute('data-class-date');
-            const classTeacher = row.getAttribute('data-class-teacher');
-            const classFee = row.getAttribute('data-class-fee');
-            const submitButton = form.querySelector('input[name="sms_submit"]');
-            
-            subjectnameField.value = subjectName;
-            gradeField.value = classGrade;
-            timeField.value = classTime;
-            dateField.value = classDate;
-            classfeeField.value = classFee;
-            teachernameField.value = classTeacher;
-
-             // Set the hire date
-            // const hireDate = row.getAttribute('data-hire-date');
-            // const hireDateField = form.querySelector('input[name="hire_date"]');
-            // if (hireDateField) {
-            //     hireDateField.value = hireDate;
-            // }
-           
-            form.action = "?page=sms-class-registration&edit=" + classID;
-            submitButton.value = "Update Class";
-        });
-    });
-});
 
 
 /*
